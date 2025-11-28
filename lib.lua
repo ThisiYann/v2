@@ -1,17 +1,17 @@
 local HttpService = game:GetService("HttpService")
 
-if not isfolder("ArtHub X") then
-    makefolder("ArtHub X")
+if not isfolder("ArtHub") then
+    makefolder("ArtHub")
 end
-if not isfolder("ArtHub X/Config") then
-    makefolder("ArtHub X/Config")
+if not isfolder("ArtHub/Config") then
+    makefolder("ArtHub/Config")
 end
 
 local gameName   = tostring(game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
 gameName         = gameName:gsub("[^%w_ ]", "")
 gameName         = gameName:gsub("%s+", "_")
 
-local ConfigFile = "ArtHub X/Config/ArtHub_" .. gameName .. ".json"
+local ConfigFile = "ArtHub/Config/Art_" .. gameName .. ".json"
 
 ConfigData       = {}
 Elements         = {}
@@ -260,10 +260,10 @@ function CircleClick(Button, X, Y)
     end)
 end
 
-local ArtLib = {}
-function ArtLib:MakeNotify(NotifyConfig)
+local ArtHub = {}
+function ArtHub:MakeNotify(NotifyConfig)
     local NotifyConfig = NotifyConfig or {}
-    NotifyConfig.Title = NotifyConfig.Title or "ArtHub X"
+    NotifyConfig.Title = NotifyConfig.Title or "ArtHub"
     NotifyConfig.Description = NotifyConfig.Description or "Notification"
     NotifyConfig.Content = NotifyConfig.Content or "Content"
     NotifyConfig.Color = NotifyConfig.Color or Color3.fromRGB(255, 0, 255)
@@ -459,9 +459,9 @@ function ArtLib:MakeNotify(NotifyConfig)
     return NotifyFunction
 end
 
-function ArtLib(msg, delay, color, title, desc)
-    return ArtLib:MakeNotify({
-        Title = title or "ArtHub X",
+function arthub(msg, delay, color, title, desc)
+    return ArtHub:MakeNotify({
+        Title = title or "ArtHub",
         Description = desc or "Notification",
         Content = msg or "Content",
         Color = color or Color3.fromRGB(0, 208, 255),
@@ -469,10 +469,10 @@ function ArtLib(msg, delay, color, title, desc)
     })
 end
 
-function ArtLib:Window(GuiConfig)
+function ArtHub:Window(GuiConfig)
     GuiConfig              = GuiConfig or {}
-    GuiConfig.Title        = GuiConfig.Title or "ArtHub X"
-    GuiConfig.Footer       = GuiConfig.Footer or "ArtHub :3"
+    GuiConfig.Title        = GuiConfig.Title or "ArtHub"
+    GuiConfig.Footer       = GuiConfig.Footer or "ArtHub"
     GuiConfig.Color        = GuiConfig.Color or Color3.fromRGB(255, 0, 255)
     GuiConfig["Tab Width"] = GuiConfig["Tab Width"] or 120
     GuiConfig.Version      = GuiConfig.Version or 1
@@ -805,7 +805,7 @@ function ArtLib:Window(GuiConfig)
         Title.Position = UDim2.new(0, 0, 0, 4)
         Title.BackgroundTransparency = 1
         Title.Font = Enum.Font.GothamBold
-        Title.Text = "ArtHub X Window"
+        Title.Text = "ArtHub Window"
         Title.TextSize = 22
         Title.TextColor3 = Color3.fromRGB(255, 255, 255)
         Title.ZIndex = 52
@@ -2706,4 +2706,4 @@ function ArtLib:Window(GuiConfig)
     return Tabs
 end
 
-return ArtLib
+return ArtHub
