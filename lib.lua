@@ -1,17 +1,17 @@
 local HttpService = game:GetService("HttpService")
 
-if not isfolder("ArtHub") then
-    makefolder("ArtHub")
+if not isfolder("ArtHub X") then
+    makefolder("ArtHub X")
 end
-if not isfolder("ArtHub/Config") then
-    makefolder("ArtHub/Config")
+if not isfolder("ArtHub X/Config") then
+    makefolder("ArtHub X/Config")
 end
 
 local gameName   = tostring(game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
 gameName         = gameName:gsub("[^%w_ ]", "")
 gameName         = gameName:gsub("%s+", "_")
 
-local ConfigFile = "ArtHub/Config/Chloe_" .. gameName .. ".json"
+local ConfigFile = "ArtHub X/Config/ArtHub_" .. gameName .. ".json"
 
 ConfigData       = {}
 Elements         = {}
@@ -260,10 +260,10 @@ function CircleClick(Button, X, Y)
     end)
 end
 
-local ArtHub = {}
-function ArtHub:MakeNotify(NotifyConfig)
+local ArtLib = {}
+function ArtLib:MakeNotify(NotifyConfig)
     local NotifyConfig = NotifyConfig or {}
-    NotifyConfig.Title = NotifyConfig.Title or "ArtHub"
+    NotifyConfig.Title = NotifyConfig.Title or "ArtHub X"
     NotifyConfig.Description = NotifyConfig.Description or "Notification"
     NotifyConfig.Content = NotifyConfig.Content or "Content"
     NotifyConfig.Color = NotifyConfig.Color or Color3.fromRGB(255, 0, 255)
@@ -459,9 +459,9 @@ function ArtHub:MakeNotify(NotifyConfig)
     return NotifyFunction
 end
 
-function ArtHub(msg, delay, color, title, desc)
-    return ArtHub:MakeNotify({
-        Title = title or "ArtHub",
+function ArtLib(msg, delay, color, title, desc)
+    return ArtLib:MakeNotify({
+        Title = title or "ArtHub X",
         Description = desc or "Notification",
         Content = msg or "Content",
         Color = color or Color3.fromRGB(0, 208, 255),
@@ -469,10 +469,10 @@ function ArtHub(msg, delay, color, title, desc)
     })
 end
 
-function ArtHub:Window(GuiConfig)
+function ArtLib:Window(GuiConfig)
     GuiConfig              = GuiConfig or {}
-    GuiConfig.Title        = GuiConfig.Title or "ArtHub"
-    GuiConfig.Footer       = GuiConfig.Footer or "Chloee :3"
+    GuiConfig.Title        = GuiConfig.Title or "ArtHub X"
+    GuiConfig.Footer       = GuiConfig.Footer or "ArtHub :3"
     GuiConfig.Color        = GuiConfig.Color or Color3.fromRGB(255, 0, 255)
     GuiConfig["Tab Width"] = GuiConfig["Tab Width"] or 120
     GuiConfig.Version      = GuiConfig.Version or 1
@@ -482,7 +482,7 @@ function ArtHub:Window(GuiConfig)
 
     local GuiFunc = {}
 
-    local Chloeex = Instance.new("ScreenGui");
+    local ArtScreen = Instance.new("ScreenGui");
     local DropShadowHolder = Instance.new("Frame");
     local DropShadow = Instance.new("ImageLabel");
     local Main = Instance.new("Frame");
@@ -505,10 +505,10 @@ function ArtHub:Window(GuiConfig)
     local LayersFolder = Instance.new("Folder");
     local LayersPageLayout = Instance.new("UIPageLayout");
 
-    Chloeex.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    Chloeex.Name = "Chloeex"
-    Chloeex.ResetOnSpawn = false
-    Chloeex.Parent = game:GetService("CoreGui")
+    ArtScreen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ArtScreen.Name = "ArtScreen"
+    ArtScreen.ResetOnSpawn = false
+    ArtScreen.Parent = game:GetService("CoreGui")
 
     DropShadowHolder.BackgroundTransparency = 1
     DropShadowHolder.BorderSizePixel = 0
@@ -521,10 +521,10 @@ function ArtHub:Window(GuiConfig)
     end
     DropShadowHolder.ZIndex = 0
     DropShadowHolder.Name = "DropShadowHolder"
-    DropShadowHolder.Parent = Chloeex
+    DropShadowHolder.Parent = ArtScreen
 
-    DropShadowHolder.Position = UDim2.new(0, (Chloeex.AbsoluteSize.X // 2 - DropShadowHolder.Size.X.Offset // 2), 0,
-        (Chloeex.AbsoluteSize.Y // 2 - DropShadowHolder.Size.Y.Offset // 2))
+    DropShadowHolder.Position = UDim2.new(0, (ArtScreen.AbsoluteSize.X // 2 - DropShadowHolder.Size.X.Offset // 2), 0,
+        (ArtScreen.AbsoluteSize.Y // 2 - DropShadowHolder.Size.Y.Offset // 2))
     DropShadow.Image = "rbxassetid://6015897843"
     DropShadow.ImageColor3 = Color3.fromRGB(15, 15, 15)
     DropShadow.ImageTransparency = 1
@@ -747,8 +747,8 @@ function ArtHub:Window(GuiConfig)
     ScrollTab.ChildRemoved:Connect(UpdateSize1)
 
     function GuiFunc:DestroyGui()
-        if CoreGui:FindFirstChild("Chloeex") then
-            Chloeex:Destroy()
+        if CoreGui:FindFirstChild("ArtScreen") then
+            ArtScreen:Destroy()
         end
     end
 
@@ -805,7 +805,7 @@ function ArtHub:Window(GuiConfig)
         Title.Position = UDim2.new(0, 0, 0, 4)
         Title.BackgroundTransparency = 1
         Title.Font = Enum.Font.GothamBold
-        Title.Text = "ArtHub Window"
+        Title.Text = "ArtHub X Window"
         Title.TextSize = 22
         Title.TextColor3 = Color3.fromRGB(255, 255, 255)
         Title.ZIndex = 52
@@ -854,7 +854,7 @@ function ArtHub:Window(GuiConfig)
         Instance.new("UICorner", Cancel).CornerRadius = UDim.new(0, 6)
 
         Yes.MouseButton1Click:Connect(function()
-            if Chloeex then Chloeex:Destroy() end
+            if ArtScreen then ArtScreen:Destroy() end
             if game.CoreGui:FindFirstChild("ToggleUIButton") then
                 game.CoreGui.ToggleUIButton:Destroy()
             end
@@ -2706,4 +2706,4 @@ function ArtHub:Window(GuiConfig)
     return Tabs
 end
 
-return ArtHub
+return ArtLib
