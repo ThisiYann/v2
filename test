@@ -1,0 +1,427 @@
+-------------------------------------------------------
+------------------  CONFIG & WINDUI  -------------------
+-------------------------------------------------------
+
+local Version = "1.6.53"
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/" .. Version .. "/main.lua"))()
+
+local Config = {
+    ReelDelay = 1.0,
+    FishingDelay = 1.0,
+    AutoFishActive = false,
+    AutoFishThread = nil,
+}
+
+-------------------------------------------------------
+------------------  LOAD PACKAGES  ---------------------
+-------------------------------------------------------
+
+local a = { 
+    Players = game:GetService("Players"), 
+    RunService = game:GetService("RunService"), 
+    HttpService = game:GetService("HttpService"), 
+    RS = game:GetService("ReplicatedStorage"), 
+    VIM = game:GetService("VirtualInputManager"), 
+    PG = game:GetService("Players").LocalPlayer.PlayerGui, 
+    Camera = workspace.CurrentCamera, 
+    GuiService = game:GetService("GuiService"), 
+    CoreGui = game:GetService("CoreGui")
+}
+
+local b = {
+    Net = a.RS.Packages._Index["sleitnick_net@0.2.0"].net, 
+    Replion = require(a.RS.Packages.Replion), 
+    FishingController = require(a.RS.Controllers.FishingController), 
+    TradingController = require(a.RS.Controllers.ItemTradingController), 
+    ItemUtility = require(a.RS.Shared.ItemUtility), 
+    VendorUtility = require(a.RS.Shared.VendorUtility), 
+    PlayerStatsUtility = require(a.RS.Shared.PlayerStatsUtility), 
+    Effects = require(a.RS.Shared.Effects), 
+    NotifierFish = require(a.RS.Controllers.TextNotificationController)
+}
+
+local c = {
+    Events = {
+        RECutscene = b.Net["RE/ReplicateCutscene"],
+        REStop = b.Net["RE/StopCutscene"],
+        REFav = b.Net["RE/FavoriteItem"],
+        REFavChg = b.Net["RE/FavoriteStateChanged"],
+        REFishDone = b.Net["RE/FishingCompleted"],
+        REFishGot = b.Net["RE/FishCaught"],
+        RENotify = b.Net["RE/TextNotification"],
+        REEquip = b.Net["RE/EquipToolFromHotbar"],
+        REEquipItem = b.Net["RE/EquipItem"],
+        REAltar = b.Net["RE/ActivateEnchantingAltar"],
+        REAltar2 = b.Net["RE/ActivateSecondEnchantingAltar"],
+        UpdateOxygen = b.Net["URE/UpdateOxygen"],
+        REPlayFishEffect = b.Net["RE/PlayFishingEffect"],
+        RETextEffect = b.Net["RE/ReplicateTextEffect"],
+        REEvReward = b.Net["RE/ClaimEventReward"],
+        Totem = b.Net["RE/SpawnTotem"],
+        REObtainedNewFishNotification = b.Net["RE/ObtainedNewFishNotification"],
+        FishingMinigameChanged = b.Net["RE/FishingMinigameChanged"],
+        FishingStopped = b.Net["RE/FishingStopped"],
+    },
+
+    Functions = {
+        Trade = b.Net["RF/InitiateTrade"],
+        BuyRod = b.Net["RF/PurchaseFishingRod"],
+        BuyBait = b.Net["RF/PurchaseBait"],
+        BuyWeather = b.Net["RF/PurchaseWeatherEvent"],
+        ChargeRod = b.Net["RF/ChargeFishingRod"],
+        StartMini = b.Net["RF/RequestFishingMinigameStarted"],
+        UpdateRadar = b.Net["RF/UpdateFishingRadar"],
+        Cancel = b.Net["RF/CancelFishingInputs"],
+        Dialogue = b.Net["RF/SpecialDialogueEvent"],
+        Done = b.Net["RF/RequestFishingMinigameStarted"],
+    }
+}
+
+-------------------------------------------------------
+------------------  NOTIFICATION  ----------------------
+-------------------------------------------------------
+
+local function NotifySuccess(title, message, duration)
+    WindUI:Notify({Title = title, Content = message, Duration = duration, Icon = "circle-check"})
+end
+
+local function NotifyError(title, message, duration)
+    WindUI:Notify({Title = title, Content = message, Duration = duration, Icon = "ban"})
+end
+
+local function NotifyInfo(title, message, duration)
+    WindUI:Notify({Title = title, Content = message, Duration = duration, Icon = "info"})
+end
+
+local function NotifyWarning(title, message, duration)
+    WindUI:Notify({Title = title, Content = message, Duration = duration, Icon = "triangle-alert"})
+end
+
+-------------------------------------------------------
+------------------  WINDUI WINDOW  ---------------------
+-------------------------------------------------------
+
+WindUI:AddTheme({
+    Name = "Royal Void",
+    Accent = WindUI:Gradient({
+        ["0"]   = { Color = Color3.fromHex("#FF3366"), Transparency = 0 },
+        ["50"]  = { Color = Color3.fromHex("#1E90FF"), Transparency = 0 },
+        ["100"] = { Color = Color3.fromHex("#9B30FF"), Transparency = 0 },
+    }, {Rotation = 45}),
+    Dialog = Color3.fromHex("#0A0011"),
+    Outline = Color3.fromHex("#1E90FF"),
+    Text = Color3.fromHex("#FFE6FF"),
+    Placeholder = Color3.fromHex("#B34A7F"),
+    Background = Color3.fromHex("#050008"),
+    Button = Color3.fromHex("#FF00AA"),
+    Icon = Color3.fromHex("#0066CC")
+})
+
+WindUI.TransparencyValue = 0.2
+
+local Window = WindUI:CreateWindow({
+    Title = "ArtHub",
+    Icon = "crown",
+    Author = "Fishit",
+    Folder = "ArtHub",
+    Size = UDim2.fromOffset(400, 200),
+    Transparent = true,
+    Theme = "Royal Void",
+    KeySystem = false,
+    ScrollBarEnabled = true,
+    HideSearchBar = true,
+    NewElements = true
+})
+
+Window:EditOpenButton({
+    Title = "ArtHub",
+    Icon = "star",
+    CornerRadius = UDim.new(0, 30),
+    StrokeThickness = 2,
+    Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromHex("#FF3366")),
+        ColorSequenceKeypoint.new(0.5, Color3.fromHex("#1E90FF")),
+        ColorSequenceKeypoint.new(1, Color3.fromHex("#9B30FF"))
+    }),
+    Draggable = true,
+})
+
+WindUI:SetNotificationLower(true)
+
+WindUI:Notify({
+    Title = "ArtHub",
+    Content = "All Features Loaded!",
+    Duration = 5,
+    Image = "square-check-big"
+})
+
+-------------------------------------------------------
+------------------  INSTANT FISHING  -------------------
+-------------------------------------------------------
+
+local function Fastest() 
+    task.spawn(function()
+
+        -- Cancel
+        pcall(function()
+            c.Functions.Cancel:InvokeServer()
+        end)
+
+        local ServerTime = workspace:GetServerTimeNow()
+
+        -- Charge Rod
+        pcall(function()
+            c.Functions.ChargeRod:InvokeServer(ServerTime)
+        end)
+
+        -- Start
+        pcall(function()
+            c.Functions.StartMini:InvokeServer(-1, 0.999)
+        end)
+
+        task.wait(Config.FishingDelay)
+
+        -- Complete Fishing
+        pcall(function()
+            c.Events.REFishDone:FireServer()
+        end)
+    end)
+end
+
+-------------------------------------------------------
+------------------  BLATANT UI TAB  --------------------
+-------------------------------------------------------
+
+local Fishing = Window:Tab({
+    Title = "Blatant",
+    Icon = "fish"
+})
+
+Fishing:Section({
+    Title = "Blatant",
+    TextSize = 22,
+    TextXAlignment = "Left",
+})
+
+-- Reel delay
+Fishing:Input({
+    Title = "Delay Reel",
+    Value = tostring(Config.ReelDelay),
+    Type = "Input",
+    Callback = function(reel)
+        local num = tonumber(reel)
+        if num then
+            Config.ReelDelay = num
+        else
+            NotifyError("Error", "Isi angka!")
+        end
+    end
+})
+
+-- Fishing Delay
+Fishing:Input({
+    Title = "Delay Fishing",
+    Type = "Input",
+    Callback = function(delay)
+        local num = tonumber(delay)
+        if num then
+            Config.FishingDelay = num
+        else
+            NotifyError("Error", "Isi angka!")
+        end
+    end
+})
+
+-- Auto Fish Instant
+Fishing:Toggle({
+    Title = "Auto Fish Blatant",
+    Default = _G.FBlatant or false,
+    Callback = function(v)
+        _G.FBlatant = v
+        if v then
+            NotifySuccess("Blatant", "Auto Instant Fishing ON")
+            task.spawn(function()
+                while _G.FBlatant do
+                    Fastest()
+                    task.wait(Config.ReelDelay)
+                end
+            end)
+        else
+            NotifyWarning("Blatant", "Auto Instant Fishing OFF")
+        end
+    end
+})
+
+-- Restart button (kosong dulu)
+Fishing:Button({
+    Title = "Restart Fishing",
+    Callback = function() end
+})
+
+Fishing:Section({
+    Title = "Legit",
+    TextSize = 22,
+    TextXAlignment = "Left",
+})
+local selectedMode = "Always Perfect"
+
+Fishing:Toggle({
+    Title = "Auto Fish Legit",
+    Default = _G.FLegit or false,
+    Callback = function(state)
+        local fishCtrl = b.FishingController
+        _G.FLegit = state
+        fishCtrl._autoLoop = state
+        if not state then
+            if fishCtrl._oldGetPower then
+                fishCtrl._getPower = fishCtrl._oldGetPower
+                fishCtrl._oldGetPower = nil
+        end
+            NotifyWarning("Legit", "Auto Fish Legit OFF")
+            return
+        end
+        NotifySuccess("Legit", "Auto Fish Legit ON")
+        task.spawn(function()
+            while _G.FLegit and fishCtrl._autoLoop do
+                local hasMini = fishCtrl:GetCurrentGUID()
+                if not hasMini then
+                    pcall(function()
+                        fishCtrl:RequestChargeFishingRod(
+                            Vector2.new(a.Camera.ViewportSize.X / 2, a.Camera.ViewportSize.Y / 2),
+                            true
+                        )
+                    end)
+                    task.wait(0.25)
+                    pcall(function()
+                        fishCtrl:RequestStartFishingMinigame()
+                    end)
+                    task.wait(0.35)
+                end
+                while fishCtrl:GetCurrentGUID() 
+                and _G.FLegit 
+                and fishCtrl._autoLoop do
+                    pcall(function()
+                        fishCtrl:RequestFishingMinigameClick()
+                    end)
+                    task.wait(1)
+                    pcall(function()
+                        c.Events.REFishDone:FireServer()
+                    end)
+                    task.wait(0.1)
+                end
+                task.wait(0.25)
+            end
+        end)
+    end
+})
+
+
+local Teleport = Window:Tab({
+    Title = "Teleport",
+    Icon = "map"
+})
+
+Teleport:Section({
+    Title = "Teleport Locations",
+    TextSize = 22,
+    TextXAlignment = "Left",
+})
+
+local tpList = {
+    ["Eso"] = Vector3.new(3210.1, -1302.9, 1411.7),
+    ["Ruin"] = Vector3.new(6074.3, -585.9, 4623.1),
+    ["Jungle"] = Vector3.new(1489.5, 7.4, -436.2),
+    ["Temple"] = Vector3.new(1474.6, -21.9, -629.8),
+    ["Creator"] = Vector3.new(1011.3, 22.7, 5076.3),
+    ["Kohana"] = Vector3.new(-598.8, 3.0, 801.4),
+    ["Tropical"] = Vector3.new(-2043.1, 6.3, 3663.5),
+    ["Iron Café"] = Vector3.new(-8625.1, -547.5, 178.9),
+    ["Iron Cavern"] = Vector3.new(-8796.0, -585.0, 91.5),
+    ["Coral"] = Vector3.new(-3135.7, 2.7, 2126.2),
+}
+
+local function teleportTo(pos)
+    local char = a.Players.LocalPlayer.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then
+        NotifyError("Teleport", "Character not found!", 4)
+        return
+    end
+
+    char:PivotTo(CFrame.new(pos))
+    NotifySuccess("Teleport", "Teleported successfully!", 3)
+end
+
+for name, pos in pairs(tpList) do
+    Teleport:Button({
+        Title = name,
+        Callback = function()
+            teleportTo(pos)
+        end
+    })
+end
+
+-------------------------------------------------------
+--------------------  TELEPORT PLAYER  ----------------
+-------------------------------------------------------
+
+Teleport:Section({
+    Title = "Teleport to Player",
+    TextSize = 22,
+    TextXAlignment = "Left",
+})
+
+local SelectedPlayer = nil
+
+-- Dropdown pilih player
+Teleport:Dropdown({
+    Title = "Select Player",
+    Description = "Choose a player to teleport to",
+    Values = (function()
+        local list = {}
+        for _, plr in ipairs(a.Players:GetPlayers()) do
+            if plr.Name ~= a.Players.LocalPlayer.Name then
+                table.insert(list, plr.Name)
+            end
+        end
+        return list
+    end)(),
+    Callback = function(v)
+        SelectedPlayer = v
+        NotifyInfo("Teleport", "Selected: "..v, 3)
+    end
+})
+
+-- Tombol teleport ke player
+Teleport:Button({
+    Title = "Teleport",
+    Callback = function()
+        if not SelectedPlayer then
+            NotifyError("Teleport", "No player selected!", 3)
+            return
+        end
+
+        local target = a.Players:FindFirstChild(SelectedPlayer)
+        if not target or not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") then
+            NotifyError("Teleport", "Target player not found!", 3)
+            return
+        end
+
+        local char = a.Players.LocalPlayer.Character
+        if not char or not char:FindFirstChild("HumanoidRootPart") then
+            NotifyError("Teleport", "Your character not found!", 3)
+            return
+        end
+
+        char:PivotTo(target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 3, 0))
+        NotifySuccess("Teleport", "Teleported to " .. SelectedPlayer .. "!", 3)
+    end
+})
+
+-- Refresh Player List
+Teleport:Button({
+    Title = "Refresh Player List",
+    Callback = function()
+        NotifyInfo("Teleport", "Player list refreshed!", 3)
+        Teleport:Refresh() -- WindUI supports reload
+    end
+})
